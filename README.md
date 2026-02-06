@@ -37,18 +37,12 @@ Assicurati di creare il database `palestra` e di aggiornare le credenziali se ne
 cd gym_backend
 ./mvnw spring-boot:run
 ```
-Su Windows:
-```
-cd gym_backend
-.\mvnw.cmd spring-boot:run
-```
 Backend disponibile su `http://localhost:8080`.
 
 ### 2) Frontend
 ```
 cd gym_frontend
-npm install
-npm start
+ng serve -o
 ```
 Frontend disponibile su `http://localhost:4200`.
 
