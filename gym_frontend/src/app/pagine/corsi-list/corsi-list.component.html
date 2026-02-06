@@ -1,0 +1,50 @@
+﻿<div class="gym-page">
+  <div class="gym-container">
+    <h1 class="gym-title">Allenamento</h1>
+
+    <ng-container *ngIf="corsi$ | async as corsi">
+      <div *ngIf="corsi.length === 0" class="gym-card hero">
+        <div class="hero-left">
+          <h2 class="card-title" style="font-size:30px;margin-bottom:10px;">Nessun corso disponibile</h2>
+          <p class="card-desc">Aggiungi corsi dallâ€™area admin.</p>
+        </div>
+        <div class="hero-right hero-right--fallback"></div>
+      </div>
+
+      <div class="gym-grid-1" *ngIf="corsi.length > 0">
+        <div class="gym-card hero" *ngFor="let c of corsi">
+          <div class="hero-left">
+            <h2 class="card-title">{{ c.titolo }}</h2>
+            <p class="card-desc">{{ c.descrizione }}</p>
+
+            <p class="card-meta">{{ c.lezione }}</p>
+
+            <div class="reviews-block">
+              <div class="reviews-title">Recensioni</div>
+              <div *ngIf="!c.recensioni || c.recensioni.length === 0" class="reviews-empty">
+                Nessuna recensione.
+              </div>
+              <div *ngFor="let r of c.recensioni" class="review-item">
+                <div class="review-meta">
+                  {{ r.utenteEmail || 'Cliente' }} - {{ r.updatedIso | date:'shortDate' }}
+                </div>
+                <div class="review-text">{{ r.testo }}</div>
+              </div>
+            </div>
+
+            <button type="button" class="btn-gold btn-wide" (click)="iscriviti(c)">ISCRIVITI</button>
+
+          </div>
+
+          <div class="hero-right" [style.background-image]="heroBg(c)"></div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+
+
+
+
+

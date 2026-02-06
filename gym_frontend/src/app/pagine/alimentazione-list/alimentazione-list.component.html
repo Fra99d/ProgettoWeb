@@ -1,0 +1,51 @@
+﻿<div class="gym-page">
+  <div class="gym-container">
+    <h1 class="gym-title">Alimentazione</h1>
+
+    <ng-container *ngIf="diete$ | async as diete">
+      <div *ngIf="diete.length === 0" class="gym-card hero">
+        <div class="hero-left">
+          <h2 class="card-title" style="font-size:30px;margin-bottom:10px;">Nessuna dieta disponibile</h2>
+          <p class="card-desc">Aggiungi diete dallâ€™area admin.</p>
+        </div>
+        <div class="hero-right hero-right--fallback"></div>
+      </div>
+
+      <div class="gym-grid-1" *ngIf="diete.length > 0">
+        <div class="gym-card hero" *ngFor="let d of diete">
+          <div class="hero-left">
+            <h2 class="card-title">{{ d.nome }}</h2>
+            <p class="card-desc">{{ d.descrizione }}</p>
+
+            <p class="card-meta">{{ d.appuntamento }}</p>
+
+            <div class="reviews-block">
+              <div class="reviews-title">Recensioni</div>
+              <div *ngIf="!d.recensioni || d.recensioni.length === 0" class="reviews-empty">
+                Nessuna recensione.
+              </div>
+              <div *ngFor="let r of d.recensioni" class="review-item">
+                <div class="review-meta">
+                  {{ r.utenteEmail || 'Cliente' }} - {{ r.updatedIso | date:'shortDate' }}
+                </div>
+                <div class="review-text">{{ r.testo }}</div>
+              </div>
+            </div>
+
+            <button type="button" class="btn-gold btn-wide" (click)="prenota(d)">PRENOTA</button>
+
+          </div>
+
+          <!-- âœ… come Corsi: overlay + radial + url dinamica con fallback -->
+          <div class="hero-right" [style.background-image]="heroBg(d)"></div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+
+
+
+
+

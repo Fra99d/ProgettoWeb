@@ -1,0 +1,327 @@
+﻿<div class="page">
+  <div class="page-header">
+    <h2>Admin Dashboard</h2>
+    <button type="button" class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="tabs">
+    <button type="button" class="tab" [class.active]="activeTab==='abbonamenti'" (click)="activeTab='abbonamenti'">Abbonamenti</button>
+    <button type="button" class="tab" [class.active]="activeTab==='corsi'" (click)="activeTab='corsi'">Corsi</button>
+    <button type="button" class="tab" [class.active]="activeTab==='diete'" (click)="activeTab='diete'">Diete</button>
+    <button type="button" class="tab" [class.active]="activeTab==='clienti'" (click)="activeTab='clienti'">Clienti</button>
+  </div>
+
+  <!-- ===================== CORSI ===================== -->
+  <div *ngIf="activeTab==='corsi'">
+    <div class="alerts" *ngIf="message || error">
+      <div class="ok" *ngIf="message">{{ message }}</div>
+      <div class="bad" *ngIf="error">{{ error }}</div>
+    </div>
+
+    <div class="card form">
+      <h3>{{ editingId === null ? 'Aggiungi nuovo corso' : 'Modifica corso #' + editingId }}</h3>
+
+      <label>Titolo</label>
+      <input [(ngModel)]="titolo" placeholder="Es. Calisthenics" />
+
+      <label>Descrizione</label>
+      <textarea [(ngModel)]="descrizione" rows="3" placeholder="Descrizione corso..."></textarea>
+
+      <!-- NUOVO: LEZIONE (OBBLIGATORIA) -->
+      <label>Lezione</label>
+      <input [(ngModel)]="lezione" placeholder="Es. Lunedi / Mercoledi / Venerdi - 16:30 / 18:00" />
+
+      <!-- SOLO NOME FILE -->
+      <label>Foto </label>
+      <input [(ngModel)]="fotoFile" placeholder="Es. pugilato.png" />
+
+      <!-- Preview -->
+      <div *ngIf="fotoFile.trim()" style="margin-top:10px;">
+        <img
+          [src]="'/assets/corsi/' + fotoFile.trim()"
+          alt="preview"
+          style="max-width:260px;border-radius:14px;border:1px solid rgba(255,255,255,.12);"
+        />
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" (click)="save()">
+          {{ editingId === null ? 'Aggiungi' : 'Salva modifiche' }}
+        </button>
+        <button type="button" *ngIf="editingId !== null" class="ghost" (click)="cancelEdit()">Annulla</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Lista corsi</h3>
+
+      <ng-container *ngIf="corsi$ | async as corsi">
+        <div *ngIf="corsi.length === 0" class="empty">Nessun corso presente.</div>
+
+        <div class="row" *ngFor="let c of corsi">
+          <div class="info">
+            <div class="title">{{ c.titolo }}</div>
+            <div class="desc">{{ c.descrizione }}</div>
+            <div class="meta">Lezione: {{ c.lezione }}</div>
+            <div class="meta">ID: {{ c.id }}</div>
+            <div class="meta" *ngIf="c.fotoUrl">Foto: {{ c.fotoUrl }}</div>
+          </div>
+
+          <div class="row-actions">
+            <button type="button" class="ghost" (click)="startEdit(c)">Modifica</button>
+            <button type="button" class="danger" (click)="remove(c.id)">Elimina</button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- ===================== DIETE ===================== -->
+  <div *ngIf="activeTab==='diete'">
+    <div class="alerts" *ngIf="message || error">
+      <div class="ok" *ngIf="message">{{ message }}</div>
+      <div class="bad" *ngIf="error">{{ error }}</div>
+    </div>
+
+    <div class="card form">
+      <h3>{{ editingIdDieta === null ? 'Aggiungi nuova dieta' : 'Modifica dieta #' + editingIdDieta }}</h3>
+
+      <label>Nome</label>
+      <input [(ngModel)]="nomeDieta" placeholder="Es. perdita di peso" />
+
+      <label>Descrizione</label>
+      <textarea [(ngModel)]="descrizioneDieta" rows="3" placeholder="Descrizione dieta..."></textarea>
+
+      <label>Appuntamento</label>
+      <input [(ngModel)]="appuntamentoDieta" placeholder="Es. Venerdi alle 12:00" />
+
+      <!-- SOLO NOME FILE -->
+      <label>Foto  </label>
+      <input [(ngModel)]="fotoFileDieta" placeholder="Es. diet1.jpg" />
+
+      <!-- Preview -->
+      <div *ngIf="fotoFileDieta.trim()" style="margin-top:10px;">
+        <img
+          [src]="'/assets/dietologhi/' + fotoFileDieta.trim()"
+          alt="preview"
+          style="max-width:260px;border-radius:14px;border:1px solid rgba(255,255,255,.12);"
+        />
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" (click)="saveDieta()">
+          {{ editingIdDieta === null ? 'Aggiungi' : 'Salva modifiche' }}
+        </button>
+        <button *ngIf="editingIdDieta !== null" class="ghost" (click)="cancelEditDieta()">Annulla</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Lista diete</h3>
+
+      <ng-container *ngIf="diete$ | async as diete">
+        <div *ngIf="diete.length === 0" class="empty">Nessuna dieta presente.</div>
+
+        <div class="row" *ngFor="let d of diete">
+          <div class="info">
+            <div class="title">{{ d.nome }}</div>
+            <div class="desc">{{ d.descrizione }}</div>
+            <div class="meta">Appuntamento: {{ d.appuntamento }}</div>
+            <div class="meta">ID: {{ d.id }}</div>
+            <div class="meta" *ngIf="d.fotoUrl">Foto: {{ d.fotoUrl }}</div>
+          </div>
+
+          <div class="row-actions">
+            <button type="button" class="ghost" (click)="startEditDieta(d)">Modifica</button>
+            <button type="button" class="danger" (click)="removeDieta(d.id)">Elimina</button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- ===================== ABBONAMENTI ===================== -->
+  <div *ngIf="activeTab==='abbonamenti'">
+    <div class="alerts" *ngIf="message || error">
+      <div class="ok" *ngIf="message">{{ message }}</div>
+      <div class="bad" *ngIf="error">{{ error }}</div>
+    </div>
+
+    <div class="card form">
+      <h3>{{ editingIdAbbonamento === null ? 'Aggiungi abbonamento' : 'Modifica abbonamento #' + editingIdAbbonamento }}</h3>
+
+      <label>Durata (mesi)</label>
+      <input type="number" [(ngModel)]="durata" min="1" />
+
+      <label>Prezzo (€)</label>
+      <input type="number" [(ngModel)]="prezzo" min="1" step="0.01" />
+
+      <div class="actions">
+        <button type="button" class="primary" (click)="saveAbbonamento()">
+          {{ editingIdAbbonamento === null ? 'Aggiungi' : 'Salva modifiche' }}
+        </button>
+        <button type="button" *ngIf="editingIdAbbonamento !== null" class="ghost" (click)="cancelEditAbbonamento()">Annulla</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Lista abbonamenti</h3>
+
+      <ng-container *ngIf="abbonamenti$ | async as list">
+        <div *ngIf="list.length === 0" class="empty">Nessun abbonamento presente.</div>
+
+        <div class="row" *ngFor="let a of list">
+          <div class="info">
+            <div class="title">{{ a.durata }} mesi - {{ a.prezzo }} €</div>
+            <div class="meta">ID: {{ a.id }}</div>
+          </div>
+
+          <div class="row-actions">
+            <button type="button" class="ghost" (click)="startEditAbbonamento(a)">Modifica</button>
+            <button type="button" class="danger" (click)="removeAbbonamento(a.id)">Elimina</button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- ===================== CLIENTI ===================== -->
+  <div *ngIf="activeTab==='clienti'">
+    <div class="clienti-grid">
+      <div class="clienti-col list">
+        <div class="card">
+          <h3>Lista clienti</h3>
+
+          <ng-container *ngIf="clienti$ | async as clienti">
+            <div *ngIf="clienti.length === 0" class="empty">Nessun cliente presente.</div>
+
+            <div class="row" *ngFor="let c of clienti">
+              <div class="info">
+                <div class="title">{{ c.email }}</div>
+                <div class="meta">ID: {{ c.id }}</div>
+                <div class="meta">Ruolo: {{ c.ruolo }}</div>
+                <div class="meta" *ngIf="c.hasAbbonamento">Abbonamento attivo</div>
+              </div>
+
+              <div class="row-actions">
+                <button type="button" class="ghost" (click)="selectCliente(c)">Gestisci</button>
+                <button type="button" class="danger" (click)="deleteCliente(c)">Elimina</button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="clienti-col details">
+        <div class="card form" *ngIf="selectedCliente">
+          <h3>Gestisci cliente #{{ selectedCliente.id }}</h3>
+
+          <div class="alerts" *ngIf="clienteMessage || clienteError">
+            <div class="ok" *ngIf="clienteMessage">{{ clienteMessage }}</div>
+            <div class="bad" *ngIf="clienteError">{{ clienteError }}</div>
+          </div>
+
+          <label>Email</label>
+          <input [(ngModel)]="clienteEmail" placeholder="Email cliente" />
+
+          <label>Password (lascia vuoto per non cambiare)</label>
+          <input type="password" [(ngModel)]="clientePassword" placeholder="Nuova password" />
+
+          <label>Ruolo</label>
+          <select [(ngModel)]="clienteRuolo">
+            <option value="CLIENTE">CLIENTE</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+
+          <div class="actions">
+            <button type="button" class="primary" (click)="saveCliente()">Salva</button>
+            <button type="button" class="ghost" (click)="clearClienteSelection()">Chiudi</button>
+          </div>
+        </div>
+
+        <div class="card" *ngIf="selectedCliente">
+          <h3>Stato cliente</h3>
+
+          <div *ngIf="clienteLoading" class="empty">Caricamento dati cliente...</div>
+
+          <ng-container *ngIf="!clienteLoading">
+            <div class="row" *ngIf="clienteDashboard.abbonamentoAttivo as abb; else noAbbonamento">
+              <div class="info">
+                <div class="title">Abbonamento attivo</div>
+                <div class="meta">
+                  {{ abb.durata }} mesi -
+                  {{ abb.prezzo }} €
+                </div>
+                <div class="meta">
+                  Scadenza: {{ abb.endIso | date:'longDate' }}
+                </div>
+              </div>
+              <div class="row-actions">
+                <button type="button" class="danger" (click)="removeClienteAbbonamento()">Rimuovi</button>
+              </div>
+            </div>
+            <ng-template #noAbbonamento>
+              <div class="empty">Nessun abbonamento attivo.</div>
+            </ng-template>
+
+            <h3 style="margin-top:18px;">Corsi iscritti</h3>
+            <div *ngIf="clienteDashboard.corsi.length === 0" class="empty">Nessun corso iscritto.</div>
+            <div class="row" *ngFor="let c of clienteDashboard.corsi">
+              <div class="info">
+                <div class="title">{{ c.titolo }}</div>
+                <div class="meta">ID: {{ c.id }}</div>
+              </div>
+              <div class="row-actions">
+                <button type="button" class="danger" (click)="removeClienteCorso(c.id)">Rimuovi</button>
+              </div>
+            </div>
+
+            <h3 style="margin-top:18px;">Prenotazioni diete</h3>
+            <div *ngIf="clienteDashboard.prenotazioni.length === 0" class="empty">Nessuna prenotazione.</div>
+            <div class="row" *ngFor="let p of clienteDashboard.prenotazioni">
+              <div class="info">
+                <div class="title">{{ p.dieta.nome }}</div>
+                <div class="meta">ID prenotazione: {{ p.id }}</div>
+                <div class="meta">Creato: {{ p.createdIso | date:'short' }}</div>
+              </div>
+              <div class="row-actions">
+                <button type="button" class="danger" (click)="removeClientePrenotazione(p.id)">Rimuovi</button>
+              </div>
+            </div>
+
+            <h3 style="margin-top:18px;">Recensioni corsi</h3>
+            <div *ngIf="clienteDashboard.recensioniCorsi.length === 0" class="empty">Nessuna recensione corsi.</div>
+            <div class="row" *ngFor="let r of clienteDashboard.recensioniCorsi">
+              <div class="info">
+                <div class="title">{{ r.corsoTitolo || ('Corso #' + r.corsoId) }}</div>
+                <div class="desc">{{ r.testo }}</div>
+                <div class="meta">Aggiornata: {{ r.updatedIso | date:'short' }}</div>
+              </div>
+              <div class="row-actions">
+                <button type="button" class="danger" (click)="removeClienteRecensioneCorso(r.id)">Rimuovi</button>
+              </div>
+            </div>
+
+            <h3 style="margin-top:18px;">Recensioni diete</h3>
+            <div *ngIf="clienteDashboard.recensioniDiete.length === 0" class="empty">Nessuna recensione diete.</div>
+            <div class="row" *ngFor="let r of clienteDashboard.recensioniDiete">
+              <div class="info">
+                <div class="title">{{ r.dietaNome || ('Dieta #' + r.dietaId) }}</div>
+                <div class="desc">{{ r.testo }}</div>
+                <div class="meta">Aggiornata: {{ r.updatedIso | date:'short' }}</div>
+              </div>
+              <div class="row-actions">
+                <button type="button" class="danger" (click)="removeClienteRecensioneDieta(r.id)">Rimuovi</button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="card" *ngIf="!selectedCliente">
+          <div class="empty">Seleziona un cliente per visualizzare i dettagli.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

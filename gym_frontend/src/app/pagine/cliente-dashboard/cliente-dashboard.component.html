@@ -1,0 +1,181 @@
+<div class="gym-page">
+  <div class="gym-container">
+    <h1 class="gym-title">Dashboard Cliente</h1>
+
+    <ng-container *ngIf="state$ | async as st">
+      <!-- NO ABBONAMENTO -->
+      <ng-container *ngIf="!st.abbonamentoAttivo; else abbonato">
+        <div class="gym-card plan center-card">
+          <div class="months">NESSUN ABBONAMENTO</div>
+          <div class="sub">Non hai un abbonamento attivo.</div>
+          <a routerLink="/abbonamenti" class="btn-gold btn-wide" style="display:inline-block;text-decoration:none;">
+            ABBONATI
+          </a>
+        </div>
+      </ng-container>
+
+      <!-- ABBONATO -->
+      <ng-template #abbonato>
+        <!-- CARD ABBONAMENTO + COUNTDOWN -->
+        <div class="gym-card abbonamento-card">
+          <h2 class="card-title" style="font-size:34px;margin-bottom:12px;">Abbonamento attivo</h2>
+          <p class="card-meta">Giorni rimanenti: {{ giorniRimasti$ | async }}</p>
+          <p class="card-meta">Scadenza: {{ st.abbonamentoAttivo?.endIso | date:'longDate' }}</p>
+        </div>
+
+        <!-- LISTA CORSI ISCRITTI -->
+        <h2 class="gym-title" style="font-size:28px;margin:10px 0 18px;">I tuoi corsi</h2>
+
+        <div *ngIf="st.corsi.length === 0" class="gym-card plan center-card">
+          <div class="months">LISTA VUOTA</div>
+          <div class="sub">Vai su <b>Corsi</b> e clicca <b>ISCRIVITI</b> per aggiungere corsi.</div>
+          <a routerLink="/corsi" class="btn-gold btn-wide" style="display:inline-block;text-decoration:none;">
+            VAI AI CORSI
+          </a>
+        </div>
+
+        <div class="gym-grid-1" *ngIf="st.corsi.length > 0">
+          <div class="gym-card hero" *ngFor="let c of st.corsi">
+            <div class="hero-left">
+              <h2 class="card-title" style="font-size:34px;">{{ c.titolo }}</h2>
+              <p class="card-desc">{{ c.descrizione }}</p>
+              <p class="card-meta">{{ c.lezione }}</p>
+
+              <ng-container *ngIf="getRecensioneCorso(c.id, st.recensioniCorsi) as rec; else noRecCorso">
+                <div class="review-preview">La tua recensione: {{ rec.testo }}</div>
+
+                <div class="review-actions">
+                  <button type="button" class="btn-outline btn-small" (click)="toggleRecensioneCorso(c.id, rec)">
+                    MODIFICA RECENSIONE
+                  </button>
+                  <button type="button" class="btn-outline btn-small" (click)="rimuoviCorso(c.id)">
+                    RIMUOVI
+                  </button>
+                </div>
+
+                <div class="review-editor" *ngIf="recensioniCorsoOpen[c.id]">
+                  <textarea [(ngModel)]="recensioniCorsoDraft[c.id]" rows="3" placeholder="Scrivi la tua recensione..."></textarea>
+                  <div class="review-actions">
+                    <button type="button" class="btn-outline btn-small" (click)="salvaRecensioneCorso(c.id, rec)">
+                      SALVA
+                    </button>
+                    <button type="button" class="btn-outline btn-small" (click)="eliminaRecensioneCorso(c.id)">
+                      ELIMINA
+                    </button>
+                    <button type="button" class="btn-outline btn-small" (click)="toggleRecensioneCorso(c.id, rec)">
+                      ANNULLA
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #noRecCorso>
+                <div class="review-actions">
+                  <button type="button" class="btn-outline btn-small" (click)="toggleRecensioneCorso(c.id)">
+                    LASCIA UNA RECENSIONE
+                  </button>
+                  <button type="button" class="btn-outline btn-small" (click)="rimuoviCorso(c.id)">
+                    RIMUOVI
+                  </button>
+                </div>
+
+                <div class="review-editor" *ngIf="recensioniCorsoOpen[c.id]">
+                  <textarea [(ngModel)]="recensioniCorsoDraft[c.id]" rows="3" placeholder="Scrivi la tua recensione..."></textarea>
+                  <div class="review-actions">
+                    <button type="button" class="btn-outline btn-small" (click)="salvaRecensioneCorso(c.id)">
+                      SALVA
+                    </button>
+                    <button type="button" class="btn-outline btn-small" (click)="toggleRecensioneCorso(c.id)">
+                      ANNULLA
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+
+            </div>
+
+            <div class="hero-right" [style.background-image]="heroBgFromUrl(c.fotoUrl)"></div>
+          </div>
+        </div>
+
+        <!-- LISTA PRENOTAZIONI -->
+        <h2 class="gym-title" style="font-size:28px;margin:26px 0 18px;">Prenotazioni</h2>
+
+        <div *ngIf="st.prenotazioni.length === 0" class="gym-card plan center-card">
+          <div class="months">NESSUNA PRENOTAZIONE</div>
+          <div class="sub">Vai su <b>Alimentazione</b> e clicca <b>PRENOTA</b>.</div>
+          <a routerLink="/alimentazione" class="btn-gold btn-wide" style="display:inline-block;text-decoration:none;">
+            VAI AD ALIMENTAZIONE
+          </a>
+        </div>
+
+        <div class="gym-grid-1" *ngIf="st.prenotazioni.length > 0">
+          <div class="gym-card hero" *ngFor="let p of st.prenotazioni">
+            <div class="hero-left">
+              <h2 class="card-title" style="font-size:34px;">{{ p.dieta.nome }}</h2>
+              <p class="card-desc">{{ p.dieta.descrizione }}</p>
+
+              <p class="card-meta">
+                {{ p.dieta.appuntamento }} - Prenotata il {{ p.createdIso | date:'short' }}
+              </p>
+
+              <ng-container *ngIf="getRecensioneDieta(p.dieta.id, st.recensioniDiete) as rec; else noRecDieta">
+                <div class="review-preview">La tua recensione: {{ rec.testo }}</div>
+
+                <div class="review-actions">
+                  <button type="button" class="btn-outline btn-small" (click)="toggleRecensioneDieta(p.dieta.id, rec)">
+                    MODIFICA RECENSIONE
+                  </button>
+                  <button type="button" class="btn-outline btn-small" (click)="annullaPrenotazione(p.id)">
+                    ANNULLA
+                  </button>
+                </div>
+
+                <div class="review-editor" *ngIf="recensioniDietaOpen[p.dieta.id]">
+                  <textarea [(ngModel)]="recensioniDietaDraft[p.dieta.id]" rows="3" placeholder="Scrivi la tua recensione..."></textarea>
+                  <div class="review-actions">
+                    <button type="button" class="btn-outline btn-small" (click)="salvaRecensioneDieta(p.dieta.id, rec)">
+                      SALVA
+                    </button>
+                    <button type="button" class="btn-outline btn-small" (click)="eliminaRecensioneDieta(p.dieta.id)">
+                      ELIMINA
+                    </button>
+                    <button type="button" class="btn-outline btn-small" (click)="toggleRecensioneDieta(p.dieta.id, rec)">
+                      ANNULLA
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #noRecDieta>
+                <div class="review-actions">
+                  <button type="button" class="btn-outline btn-small" (click)="toggleRecensioneDieta(p.dieta.id)">
+                    LASCIA UNA RECENSIONE
+                  </button>
+                  <button type="button" class="btn-outline btn-small" (click)="annullaPrenotazione(p.id)">
+                    ANNULLA
+                  </button>
+                </div>
+
+                <div class="review-editor" *ngIf="recensioniDietaOpen[p.dieta.id]">
+                  <textarea [(ngModel)]="recensioniDietaDraft[p.dieta.id]" rows="3" placeholder="Scrivi la tua recensione..."></textarea>
+                  <div class="review-actions">
+                    <button type="button" class="btn-outline btn-small" (click)="salvaRecensioneDieta(p.dieta.id)">
+                      SALVA
+                    </button>
+                    <button type="button" class="btn-outline btn-small" (click)="toggleRecensioneDieta(p.dieta.id)">
+                      ANNULLA
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+
+            </div>
+
+            <div class="hero-right" [style.background-image]="heroBgFromUrl(p.dieta.fotoUrl)"></div>
+          </div>
+        </div>
+      </ng-template>
+    </ng-container>
+  </div>
+</div>

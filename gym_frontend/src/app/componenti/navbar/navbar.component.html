@@ -1,0 +1,62 @@
+<header class="gym-nav">
+  <div class="gym-nav__inner">
+    <!-- LOGO -->
+    <a class="gym-nav__brand" routerLink="/cliente-dashboard" aria-label="Vai a Cliente">
+      <img class="gym-nav__logo" src="assets/logo.png" alt="Logo" />
+    </a>
+
+    <!-- LINKS -->
+    <nav class="gym-nav__links" aria-label="Navigazione principale">
+      <a
+        routerLink="/abbonamenti"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        ABBONAMENTI
+      </a>
+
+      <a
+        routerLink="/corsi"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [class.is-disabled]="disableProtectedLinks"
+        [attr.aria-disabled]="disableProtectedLinks ? 'true' : null"
+        [attr.tabindex]="disableProtectedLinks ? -1 : null"
+        (click)="blockIfDisabled($event)"
+      >
+        ALLENAMENTO
+      </a>
+
+      <a
+        routerLink="/alimentazione"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [class.is-disabled]="disableProtectedLinks"
+        [attr.aria-disabled]="disableProtectedLinks ? 'true' : null"
+        [attr.tabindex]="disableProtectedLinks ? -1 : null"
+        (click)="blockIfDisabled($event)"
+      >
+        ALIMENTAZIONE
+      </a>
+    </nav>
+
+    <!-- ACCOUNT -->
+    <button class="gym-nav__logout" type="button" (click)="logout()">ESCI</button>
+    <a
+      class="gym-nav__account"
+      routerLink="/account"
+      routerLinkActive="is-active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      aria-label="Account"
+      title="Account"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M12 12c2.76 0 5-2.24 5-5S14.76 2 12 2 7 4.24 7 7s2.24 5 5 5zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"
+        />
+      </svg>
+    </a>
+  </div>
+</header>
+
+<div class="gym-nav__spacer"></div>

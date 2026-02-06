@@ -1,0 +1,88 @@
+<div class="gym-page">
+  <div class="gym-container auth-wrap">
+    <div class="auth-logo">
+      <img src="assets/logo.png" alt="Logo" />
+    </div>
+
+    <div class="gym-card auth-card">
+      <div class="auth-tabs">
+        <button type="button" class="tab" [class.active]="mode==='login'" (click)="setMode('login')">
+          Login
+        </button>
+        <button type="button" class="tab" [class.active]="mode==='register'" (click)="setMode('register')">
+          Registrati
+        </button>
+      </div>
+
+      <div class="alerts" *ngIf="message || error">
+        <div class="ok" *ngIf="message">{{ message }}</div>
+        <div class="bad" *ngIf="error">{{ error }}</div>
+      </div>
+
+      <form (ngSubmit)="submit()" novalidate>
+        <label>Email</label>
+        <input
+          name="email"
+          type="email"
+          [(ngModel)]="email"
+          placeholder="es. nome@email.com"
+          autocomplete="username"
+        />
+
+        <label>Password</label>
+        <div class="password-field">
+          <input
+            name="password"
+            [type]="showPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            placeholder="Min 6 caratteri"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="toggle-btn"
+            (click)="showPassword = !showPassword"
+            [attr.aria-label]="showPassword ? 'Nascondi password' : 'Mostra password'"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5c-5.5 0-9.5 4.1-10.9 6.1-.2.3-.2.7 0 1C2.5 14.1 6.5 18 12 18s9.5-3.9 10.9-5.9c.2-.3.2-.7 0-1C21.5 9.1 17.5 5 12 5zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
+            </svg>
+          </button>
+        </div>
+
+        <div *ngIf="mode === 'register'">
+          <label>Conferma password</label>
+          <div class="password-field">
+            <input
+              name="password2"
+              [type]="showPassword2 ? 'text' : 'password'"
+              [(ngModel)]="password2"
+              placeholder="Ripeti password"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="toggle-btn"
+              (click)="showPassword2 = !showPassword2"
+              [attr.aria-label]="showPassword2 ? 'Nascondi password' : 'Mostra password'"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5c-5.5 0-9.5 4.1-10.9 6.1-.2.3-.2.7 0 1C2.5 14.1 6.5 18 12 18s9.5-3.9 10.9-5.9c.2-.3.2-.7 0-1C21.5 9.1 17.5 5 12 5zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn-gold btn-wide" [disabled]="loading">
+            {{ mode === 'login' ? 'Accedi' : 'Registrati' }}
+          </button>
+        </div>
+      </form>
+
+      <p class="hint" *ngIf="mode === 'register'">
+        Il ruolo admin viene creato dal sistema. La registrazione crea un account cliente.
+      </p>
+    </div>
+  </div>
+</div>

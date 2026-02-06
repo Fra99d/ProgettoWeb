@@ -1,0 +1,65 @@
+<div class="gym-page">
+  <div class="gym-container account-wrap">
+    <div class="gym-card account-card">
+      <div class="account-header">
+        <img class="account-logo" src="assets/logo.png" alt="Logo" />
+        <div>
+          <h2>Benvenuto!</h2>
+          <p class="account-email">{{ email }}</p>
+        </div>
+      </div>
+
+      <div class="alerts" *ngIf="message || error">
+        <div class="ok" *ngIf="message">{{ message }}</div>
+        <div class="bad" *ngIf="error">{{ error }}</div>
+      </div>
+
+      <label>Email</label>
+      <input [(ngModel)]="newEmail" placeholder="La tua email" />
+
+      <label>Nuova password</label>
+      <div class="password-field">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          [(ngModel)]="password"
+          placeholder="Min 6 caratteri"
+        />
+        <button
+          type="button"
+          class="toggle-btn"
+          (click)="showPassword = !showPassword"
+          [attr.aria-label]="showPassword ? 'Nascondi password' : 'Mostra password'"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5c-5.5 0-9.5 4.1-10.9 6.1-.2.3-.2.7 0 1C2.5 14.1 6.5 18 12 18s9.5-3.9 10.9-5.9c.2-.3.2-.7 0-1C21.5 9.1 17.5 5 12 5zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
+          </svg>
+        </button>
+      </div>
+
+      <label>Conferma password</label>
+      <div class="password-field">
+        <input
+          [type]="showPassword2 ? 'text' : 'password'"
+          [(ngModel)]="password2"
+          placeholder="Ripeti password"
+        />
+        <button
+          type="button"
+          class="toggle-btn"
+          (click)="showPassword2 = !showPassword2"
+          [attr.aria-label]="showPassword2 ? 'Nascondi password' : 'Mostra password'"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5c-5.5 0-9.5 4.1-10.9 6.1-.2.3-.2.7 0 1C2.5 14.1 6.5 18 12 18s9.5-3.9 10.9-5.9c.2-.3.2-.7 0-1C21.5 9.1 17.5 5 12 5zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-gold btn-wide" [disabled]="loading" (click)="save()">
+          Salva modifiche
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

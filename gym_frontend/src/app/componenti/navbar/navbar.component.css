@@ -1,0 +1,20 @@
+.gym-nav__logout {
+  border: 1px solid rgba(255,255,255,.35);
+  background: transparent;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+  letter-spacing: .05em;
+}
+.gym-nav__logout:hover {
+  border-color: rgba(255,255,255,.65);
+}
+
+.gym-nav__links a.is-disabled {
+  opacity: .45;
+  filter: blur(.8px);
+  pointer-events: none;
+  cursor: not-allowed;
+}

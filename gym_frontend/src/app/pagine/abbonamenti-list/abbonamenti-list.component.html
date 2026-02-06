@@ -1,0 +1,44 @@
+<div class="gym-page">
+  <div class="gym-container">
+    <h1 class="gym-title">Abbonamenti</h1>
+
+    <div class="alerts" *ngIf="message || error">
+      <div class="ok" *ngIf="message">{{ message }}</div>
+      <div class="bad" *ngIf="error">{{ error }}</div>
+    </div>
+
+    <ng-container *ngIf="state$ | async as st">
+      <div *ngIf="st.abbonamentoAttivo; else scegliPiano" class="gym-card plan">
+        <div class="months">ABBONAMENTO ATTIVO</div>
+        <div class="sub">
+          Giorni rimanenti:
+          <b>{{ giorniRimasti$ | async }}</b>
+        </div>
+        <div class="sub" style="margin-top:10px;">
+          Scadenza: {{ st.abbonamentoAttivo.endIso | date:'longDate' }}
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #scegliPiano>
+      <ng-container *ngIf="abbonamenti$ | async as list">
+        <div *ngIf="list.length === 0" class="gym-card plan">
+          <div class="months">NESSUN ABBONAMENTO</div>
+          <div class="sub">Aggiungi abbonamenti dall'area admin.</div>
+        </div>
+
+        <div class="gym-grid-2" *ngIf="list.length > 0">
+          <div class="gym-card plan" *ngFor="let a of list">
+            <div class="months">
+              {{ a.durata }} {{ a.durata === 1 ? 'MESE' : 'MESI' }}
+            </div>
+
+            <div class="price">{{ a.prezzo }}€</div>
+
+            <button type="button" class="btn-gold btn-wide" (click)="abbonati(a)">ABBONATI</button>
+          </div>
+        </div>
+      </ng-container>
+    </ng-template>
+  </div>
+</div>
