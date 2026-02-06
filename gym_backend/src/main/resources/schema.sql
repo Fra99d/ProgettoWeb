@@ -1,0 +1,71 @@
+CREATE TABLE IF NOT EXISTS utenti (
+  id BIGSERIAL PRIMARY KEY,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  ruolo VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS abbonamenti (
+  id BIGSERIAL PRIMARY KEY,
+  durata INTEGER NOT NULL,
+  prezzo NUMERIC(10,2) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS corsi (
+  id BIGSERIAL PRIMARY KEY,
+  titolo VARCHAR(255) NOT NULL,
+  descrizione TEXT NOT NULL,
+  lezione VARCHAR(255) NOT NULL,
+  foto_url TEXT
+);
+
+CREATE TABLE IF NOT EXISTS diete (
+  id BIGSERIAL PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  descrizione TEXT NOT NULL,
+  appuntamento VARCHAR(255) NOT NULL,
+  foto_url TEXT
+);
+
+CREATE TABLE IF NOT EXISTS abbonamenti_attivi (
+  id BIGSERIAL PRIMARY KEY,
+  utente_id BIGINT NOT NULL UNIQUE REFERENCES utenti(id) ON DELETE CASCADE,
+  abbonamento_id BIGINT NOT NULL REFERENCES abbonamenti(id),
+  start_date TIMESTAMP NOT NULL,
+  end_date TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS iscrizioni_corsi (
+  id BIGSERIAL PRIMARY KEY,
+  utente_id BIGINT NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
+  corso_id BIGINT NOT NULL REFERENCES corsi(id),
+  created_at TIMESTAMP NOT NULL,
+  UNIQUE (utente_id, corso_id)
+);
+
+CREATE TABLE IF NOT EXISTS prenotazioni_diete (
+  id BIGSERIAL PRIMARY KEY,
+  utente_id BIGINT NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
+  dieta_id BIGINT NOT NULL REFERENCES diete(id),
+  created_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS recensioni_corsi (
+  id BIGSERIAL PRIMARY KEY,
+  utente_id BIGINT NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
+  corso_id BIGINT NOT NULL REFERENCES corsi(id) ON DELETE CASCADE,
+  testo TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  UNIQUE (utente_id, corso_id)
+);
+
+CREATE TABLE IF NOT EXISTS recensioni_diete (
+  id BIGSERIAL PRIMARY KEY,
+  utente_id BIGINT NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
+  dieta_id BIGINT NOT NULL REFERENCES diete(id) ON DELETE CASCADE,
+  testo TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  UNIQUE (utente_id, dieta_id)
+);
