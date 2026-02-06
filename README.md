@@ -29,7 +29,6 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/palestra
 spring.datasource.username=postgres
 spring.datasource.password=0000
 ```
-Assicurati di creare il database `palestra` e di aggiornare le credenziali se necessario.
 
 ## Avvio progetto (sviluppo)
 ### 1) Backend
@@ -52,7 +51,6 @@ Nel file `application.properties` sono definite credenziali admin di default:
 app.admin.email=admin@gym.local
 app.admin.password=admin123
 ```
-Usale solo in locale e modificane i valori per ambienti reali.
 
 ## Immagini corsi e diete
 Le immagini devono essere presenti in:
